@@ -1,0 +1,70 @@
+[TAIPY]
+
+[DATA_NODE.initial_data]
+storage_type = "csv"
+scope = "GLOBAL:SCOPE"
+path = "data/modified_supermarkt_sales_plus.csv"
+
+[DATA_NODE.holiday]
+default_data = "False:bool"
+
+[DATA_NODE.level]
+default_data = "1:int"
+
+[DATA_NODE.date]
+
+[DATA_NODE.final_data]
+
+[DATA_NODE.model_arima]
+
+[DATA_NODE.model_xgboost]
+
+[DATA_NODE.predictions_arima]
+
+[DATA_NODE.predictions_xgboost]
+
+[DATA_NODE.result]
+
+[TASK.task_preprocess_data]
+function = "algorithms.algorithms.preprocess:function"
+inputs = [ "initial_data:SECTION", "holiday:SECTION", "level:SECTION",]
+outputs = [ "final_data:SECTION", "date:SECTION",]
+skippable = "False:bool"
+
+[TASK.task_train]
+function = "algorithms.algorithms.train_arima:function"
+inputs = [ "final_data:SECTION",]
+outputs = [ "model_arima:SECTION",]
+skippable = "False:bool"
+
+[TASK.task_forecast]
+function = "algorithms.algorithms.forecast:function"
+inputs = [ "model_arima:SECTION",]
+outputs = [ "predictions_arima:SECTION",]
+skippable = "False:bool"
+
+[TASK.task_train_xgboost]
+function = "algorithms.algorithms.train_xgboost:function"
+inputs = [ "final_data:SECTION",]
+outputs = [ "model_xgboost:SECTION",]
+skippable = "False:bool"
+
+[TASK.task_forecast_xgboost]
+function = "algorithms.algorithms.forecast_xgboost:function"
+inputs = [ "model_xgboost:SECTION", "date:SECTION",]
+outputs = [ "predictions_xgboost:SECTION",]
+skippable = "False:bool"
+
+[TASK.task_result]
+function = "algorithms.algorithms.concat:function"
+inputs = [ "final_data:SECTION", "predictions_arima:SECTION", "predictions_xgboost:SECTION",]
+outputs = [ "result:SECTION",]
+skippable = "False:bool"
+
+[SCENARIO.scenario]
+tasks = [ "task_preprocess_data:SECTION", "task_train:SECTION", "task_forecast:SECTION", "task_train_xgboost:SECTION", "task_forecast_xgboost:SECTION", "task_result:SECTION",]
+additional_data_nodes = []
+
+[SCENARIO.scenario.comparators]
+
+[SCENARIO.scenario.sequences]
